@@ -3,7 +3,7 @@ import { useState } from "react";
 import css from "./NoteForm.module.css";
 import { type NoteFormData } from "@/types/note";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { createNote } from "@/lib/api";
+import { createNote } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 import { useNoteDraftStore } from "@/lib/store/noteStore";
