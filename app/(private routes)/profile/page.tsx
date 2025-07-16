@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: "Profile | NoteHub",
     description:
       "View your profile information and manage your account on NoteHub.",
-    url: `https://09-auth-orcin.vercel.app/profile`,
+    url: `https://09-auth-pi-beryl.vercel.app/`,
     images: [
       {
         url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
