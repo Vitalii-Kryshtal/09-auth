@@ -1,72 +1,68 @@
 "use client";
-import { fetchNotes } from "@/lib/api/clientApi";
+
+import { useEffect, useState } from "react";
+import css from "./page.module.css";
 import NoteList from "@/components/NoteList/NoteList";
-import Pagination from "@/components/Pagination/Pagination";
-import SearchBox from "@/components/SearchBox/SearchBox";
-import css from "./NotesPage.module.css";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
-import { Note } from "@/types/note";
-import { useRouter } from "next/navigation";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import Loader from "@/components/Loader/Loader";
+import Pagination from "@/components//Pagination/Pagination";
+import Link from "next/link";
+import { fetchNotes } from "@/lib/api/clientApi";
+import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 
 interface NotesClientProps {
-  initialResponse: {
-    notes: Note[];
-    totalPages: number;
-  };
-  tag: string | undefined;
+  tag?: string;
 }
 
-export default function NotesClient({
-  initialResponse,
-  tag,
-}: NotesClientProps) {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [query, setQuery] = useState<string>("");
-  const [debouncedQuery] = useDebounce<string>(query, 1000);
+export default function NotesClient({ tag }: NotesClientProps) {
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery] = useDebounce(query, 400);
 
-  const loadNotes = useQuery({
-    queryKey: ["Notes", debouncedQuery, currentPage, tag],
-    queryFn: () => fetchNotes(debouncedQuery, currentPage, tag),
-    initialData: initialResponse,
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQuery, tag]);
+
+  const { data, isError, isLoading, isFetching, isSuccess } = useQuery({
+    queryKey: ["notes", tag, debouncedQuery, page],
+    queryFn: () =>
+      fetchNotes({
+        page: page,
+        search: debouncedQuery,
+        ...(tag !== "All" && { tag }),
+      }),
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
   });
 
-  const router = useRouter();
-  const createNotePage = () => router.push("/notes/action/create");
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const onChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
-    setQuery(query);
-    setCurrentPage(1);
-  };
-
-  if (loadNotes.isError) {
-    throw new Error();
-  }
-
   return (
-    <div className={css.app}>
-      <header className={css.toolbar}>
-        <SearchBox onChange={onChangeQuery} value={query} />
-        {loadNotes.isSuccess && loadNotes.data.totalPages > 1 && (
-          <Pagination
-            pageCount={loadNotes.data.totalPages}
-            onPageChange={handlePageChange}
-            currentPage={currentPage}
+    <>
+      <div className={css.app}>
+        <header className={css.toolbar}>
+          <SearchBox
+            value={query}
+            onChange={(query: string) => setQuery(query)}
           />
+          {isSuccess && data.totalPages > 1 && (
+            <Pagination
+              pageCount={data.totalPages}
+              currentPage={page}
+              onPageChange={(selectedPage: number) => setPage(selectedPage)}
+            />
+          )}
+          <Link href={"/notes/action/create"} className={css.button}>
+            Create note +
+          </Link>
+        </header>
+
+        {(isLoading || isFetching) && <Loader />}
+        {isError && <ErrorMessage />}
+        {isSuccess && data?.notes?.length === 0 && <p>No notes found.</p>}
+        {data?.notes && data?.notes?.length > 0 && (
+          <NoteList notes={data.notes} />
         )}
-        <button type="button" className={css.button} onClick={createNotePage}>
-          Create note +
-        </button>
-      </header>
-      {loadNotes.isSuccess && <NoteList notes={loadNotes.data.notes} />}
-    </div>
+      </div>
+    </>
   );
 }

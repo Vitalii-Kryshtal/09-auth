@@ -1,41 +1,43 @@
-import { fetchNotes } from "@/lib/api/serverApi";
 import NotesClient from "./Notes.client";
 import { Metadata } from "next";
 
-interface NotesProps {
+type Props = {
   params: Promise<{ slug: string[] }>;
-}
+};
 
-export async function generateMetadata({
-  params,
-}: NotesProps): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = slug[0];
+  const selectedTag = slug[0] === "All" ? undefined : slug[0];
   return {
-    title: `Notehub - ${category}`,
-    description: `Explore all notes in the ${category} category. Stay organized and easily find what matters most`,
+    title: `Notes${selectedTag ? ` - ${selectedTag}` : "All Notes"}`,
+    description: `Notes filtered by ${selectedTag || "All Notes"}`,
     openGraph: {
-      title: `Notehub - ${category}`,
-      description: `Explore all notes in the ${category} category. Stay organized and easily find what matters most`,
-      url: `https://09-auth-nu.vercel.app/notes/filter/${category}`,
+      title: `Notes${selectedTag ? ` - ${selectedTag}` : "All Notes"}`,
+      description: `Notes filtered by ${selectedTag || "All Notes"}`,
+      url: `https://09-auth-orcin.vercel.app/notes/filter/${slug.join("/")}`,
       siteName: "NoteHub",
       images: [
         {
           url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
           width: 1200,
           height: 630,
-          alt: "NoteHub",
+          alt: `Notes${selectedTag ? ` - ${selectedTag}` : "All Notes"}`,
         },
       ],
-      type: "article",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Notes${selectedTag ? ` - ${selectedTag}` : "All Notes"}`,
+      description: `Notes filtered by ${selectedTag || "All Notes"}`,
+      images: ["https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"],
     },
   };
 }
 
-export default async function Notes({ params }: NotesProps) {
+export default async function Notes({ params }: Props) {
   const { slug } = await params;
-  const tag = slug[0] === "All" ? undefined : slug[0];
-  const response = await fetchNotes("", 1, tag);
+  const selectedTag = slug[0] === "All" ? undefined : slug[0];
 
-  return <NotesClient initialResponse={response} tag={tag} />;
+  return <NotesClient tag={selectedTag} />;
 }

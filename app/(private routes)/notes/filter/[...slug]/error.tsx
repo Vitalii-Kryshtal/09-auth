@@ -1,16 +1,13 @@
 "use client";
+
 type ErrorProps = {
   error: Error;
-  reset: () => void;
 };
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function Error({ error }: ErrorProps) {
   return (
-    <div className="error">
+    <div className="center">
       <p>Could not fetch the list of notes. {error.message}</p>
-      <button className="button" onClick={() => reset()}>
-        Try again
-      </button>
     </div>
   );
 }

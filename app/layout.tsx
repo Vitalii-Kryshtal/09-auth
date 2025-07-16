@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import { Roboto } from "next/font/google";
+import TanStackProvider from "@/components/TanStackProvider/TanStakProvider";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
-import TanStackProvider from "@/components/TanStackProvider/TanStakProvider";
-import { Roboto } from "next/font/google";
+import "./globals.css";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-roboto",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "NoteHub",
-  description:
-    "Take notes, organize tasks, and collaborate effortlessly. Your all-in-one digital notebook.",
-  icons: {
-    icon: "/favicon.svg",
-  },
+  description: "Simple Notes",
   openGraph: {
     title: "NoteHub",
-    description:
-      "Take notes, organize tasks, and collaborate effortlessly. Your all-in-one digital notebook.",
-    url: "https://08-zustand-three.vercel.app/",
+    description: "Simple Notes",
+    url: "https://08-zustand-iota.vercel.app/",
     siteName: "NoteHub",
     images: [
       {
@@ -28,14 +31,13 @@ export const metadata: Metadata = {
     ],
     type: "article",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "NoteHub",
+    description: "Simple Notes",
+    images: ["https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"],
+  },
 };
-
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-roboto",
-  display: "swap",
-});
 
 export default function RootLayout({
   children,
@@ -48,10 +50,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={roboto.variable}>
         <TanStackProvider>
-          <Header />
-          {children}
-          {modal}
-          <Footer />
+          <AuthProvider>
+            <Header />
+            <main>{children}</main>
+            {modal}
+            <Footer />
+          </AuthProvider>
         </TanStackProvider>
       </body>
     </html>

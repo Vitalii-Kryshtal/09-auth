@@ -1,63 +1,61 @@
-import Image from "next/image";
-import css from "./ProfilePage.module.css";
-import Link from "next/link";
-import { type Metadata } from "next";
-import { getMe } from "@/lib/api/serverApi";
+import { getServerMe } from "@/lib/api/serverApi";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const user = await getMe();
-  return {
-    title: `NoteHub - ${user.username}`,
+import css from "./page.module.css";
+import Image from "next/image";
+import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Profile | NoteHub",
+  description:
+    "View your profile information and manage your account on NoteHub.",
+  openGraph: {
+    title: "Profile | NoteHub",
     description:
-      "Take notes, organize tasks, and collaborate effortlessly. Your all-in-one digital notebook.",
-    icons: {
-      icon: "/favicon.svg",
-    },
-    openGraph: {
-      title: `NoteHub - ${user.username}`,
-      description:
-        "Take notes, organize tasks, and collaborate effortlessly. Your all-in-one digital notebook.",
-      url: "https://09-auth-nu.vercel.app/profile",
-      siteName: "NoteHub",
-      images: [
-        {
-          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
-          width: 1200,
-          height: 630,
-          alt: "NoteHub",
-        },
-      ],
-      type: "article",
-    },
-  };
-}
+      "View your profile information and manage your account on NoteHub.",
+    url: `https://09-auth-orcin.vercel.app/profile`,
+    images: [
+      {
+        url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+        width: 1200,
+        height: 630,
+        alt: "NoteHub - Manage your profile and account settings.",
+      },
+    ],
+  },
+};
 
 export default async function Profile() {
-  const user = await getMe();
-  const avatarUrl = user ? user.avatar : "/avatar.webp";
+  const data = await getServerMe();
   return (
-    <main className={css.mainContent}>
-      <div className={css.profileCard}>
-        <div className={css.header}>
-          <h1 className={css.formTitle}>Profile Page</h1>
-          <Link href="/profile/edit" className={css.editProfileButton}>
-            Edit Profile
-          </Link>
-        </div>
-        <div className={css.avatarWrapper}>
-          <Image
-            src={avatarUrl}
-            alt="User Avatar"
-            width={120}
-            height={120}
-            className={css.avatar}
-          />
-        </div>
-        <div className={css.profileInfo}>
-          <p>Username: {user?.username}</p>
-          <p>Email: {user?.email}</p>
-        </div>
-      </div>
-    </main>
+    <>
+      {data && (
+        <main className={css.mainContent}>
+          <div className={css.profileCard}>
+            <div className={css.header}>
+              <h1 className={css.formTitle}>Profile Page</h1>
+              <Link href="/profile/edit" className={css.editProfileButton}>
+                Edit Profile
+              </Link>
+            </div>
+
+            <div className={css.avatarWrapper}>
+              <Image
+                src={data.avatar}
+                alt="User Avatar"
+                width={120}
+                height={120}
+                className={css.avatar}
+              />
+            </div>
+
+            <div className={css.profileInfo}>
+              <p>Username: {data.username}</p>
+              <p>Email: {data.email}</p>
+            </div>
+          </div>
+        </main>
+      )}
+    </>
   );
 }

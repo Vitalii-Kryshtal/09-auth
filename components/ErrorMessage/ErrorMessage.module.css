@@ -1,0 +1,16 @@
+.error_wrap {
+  padding: 24px 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  color: #d32f2f;
+  background-color: #e7d1cf;
+  border-color: #eedddc;
+  transition: all 400ms ease-in-out;
+  text-align: center;
+  width: 20em;
+  margin: 0 auto;
+}
+.error_text {
+  font-size: clamp(12px, 2vh, 20px);
+  margin: 0;
+}

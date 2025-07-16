@@ -5,13 +5,11 @@ type Props = {
   sidebar: React.ReactNode;
 };
 
-const NotesLayout = ({ children, sidebar }: Props) => {
+export default function RootLayout({ children, sidebar }: Props) {
   return (
-    <section className={css.container}>
+    <div className={css.container}>
       <aside className={css.sidebar}>{sidebar}</aside>
-      <div className={css.notesWrapper}>{children}</div>
-    </section>
+      <section className={css.notesWrapper}>{children}</section>
+    </div>
   );
-};
-
-export default NotesLayout;
+}

@@ -1,15 +1,14 @@
 export interface Note {
-  id: number;
+  id: string;
   title: string;
   content: string;
   tag: string;
   createdAt: string;
   updatedAt: string;
-  userId: string;
 }
-
-export interface NoteFormData {
+export interface NewNoteData {
   title: string;
-  content: string;
-  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+  content?: string;
+  tag: Tag;
 }
+export type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
